@@ -36,8 +36,8 @@ public class PokemonController {
     // Bezieht sich auf Methode pokemonDetail also immer wenn die URL wie oben steht mit einer ID
     // wird pokemonDetail ausgeführt und kriegt @PathVariable id mit übergeben
     // Return einfach nur ID mit Squirtle und Water als Demo
-    public Pokemon pokemonDetail(@PathVariable int id) {
-        return new Pokemon(id, "Squirtle", "Water");
+    public ResponseEntity<PokemonDto> pokemonDetail(@PathVariable int id) {
+        return ResponseEntity.ok(pokemonService.getPokemonById(id));
     }
 
     @PostMapping("pokemon/create")
@@ -52,19 +52,16 @@ public class PokemonController {
 
     @PutMapping("pokemon/{id}/update")
     // PUT Request für Update CRUD
-    public ResponseEntity<Pokemon> updatePokemon(@RequestBody Pokemon pokemon , @PathVariable("id") int pokemonId) {
-        System.out.println(pokemon.getName());
-        System.out.println(pokemon.getType());
-
-        return ResponseEntity.ok(pokemon);
+    public ResponseEntity<PokemonDto> updatePokemon(@RequestBody PokemonDto pokemonDto , @PathVariable("id") int pokemonId) {
+        PokemonDto response = pokemonService.updatePokemon(pokemonDto, pokemonId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("pokemon/{id}/delete")
     // DELETE Request für Delete CRUD
     public ResponseEntity<String> deletePokemon(@PathVariable("id") int pokemonId) {
-        System.out.println(pokemonId);
-
-        return ResponseEntity.ok("Pokemon deleted succesfully!");
+        pokemonService.deletePokemon(pokemonId);
+        return new ResponseEntity<>("Pokemon deleted", HttpStatus.OK);
     }
 
 }

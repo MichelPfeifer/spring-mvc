@@ -1,6 +1,7 @@
 package com.example.api.service.impl;
 
 import com.example.api.dto.PokemonDto;
+import com.example.api.exception.PokemonNotFoundException;
 import com.example.api.model.Pokemon;
 import com.example.api.repository.PokemonRepository;
 import com.example.api.service.PokemonService;
@@ -41,6 +42,29 @@ public class PokemonServiceImpl implements PokemonService {
         List <Pokemon> pokemon = pokemonRepository.findAll();
 
         return pokemon.stream().map(p -> mapToDto(p)).collect(Collectors.toList());
+    }
+
+    @Override
+    public PokemonDto getPokemonById(int id) {
+        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(() -> new PokemonNotFoundException("Pokemon not found"));
+        return mapToDto(pokemon);
+    }
+
+    @Override
+    public PokemonDto updatePokemon(PokemonDto pokemonDto, int id) {
+        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(() -> new PokemonNotFoundException("Pokemon could not be updated"));
+        pokemon.setName(pokemonDto.getName());
+        pokemon.setType(pokemonDto.getType());
+
+        Pokemon updatedPokemon = pokemonRepository.save(pokemon);
+
+        return mapToDto(updatedPokemon);
+    }
+
+    @Override
+    public void deletePokemon(int id) {
+        Pokemon pokemon = pokemonRepository.findById(id).orElseThrow(() -> new PokemonNotFoundException("Pokemon not be deleted"));
+        pokemonRepository.delete(pokemon);
     }
 
     private PokemonDto mapToDto(Pokemon pokemon) {
